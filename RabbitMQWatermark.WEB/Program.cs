@@ -16,7 +16,7 @@ namespace RabbitMQWatermark.WEB
             {
                 options.UseInMemoryDatabase(databaseName: "productDb");
             });
-            builder.Services.AddSingleton(sp=> new ConnectionFactory() { Uri=new Uri()});
+            builder.Services.AddSingleton(sp=> new ConnectionFactory() { Uri=new Uri(builder.Configuration.GetConnectionString("RabbitMQ"))});
 
             var app = builder.Build();
 
