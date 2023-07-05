@@ -41,22 +41,47 @@ namespace RabbitMQWatermark.WEB.BackgroundServices
 
         private Task Consumer_Received(object sender, BasicDeliverEventArgs @event)
         {
-            var productImageCreatedEvent = JsonSerializer.Deserialize<productImageCreatedEvent>(Encoding.UTF8.GetString(@event.Body.ToArray()));
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot/Images",productImageCreatedEvent.ImageName);
+            try
+            {
 
-            using var img = Image.FromFile(path);
+                var productImageCreatedEvent = JsonSerializer.Deserialize<productImageCreatedEvent>(Encoding.UTF8.GetString(@event.Body.ToArray()));
 
-            using var graphic = Graphics.FromImage(img);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", productImageCreatedEvent.ImageName);
 
-            var font = new Font(FontFamily.GenericMonospace,32,FontStyle.Bold,GraphicsUnit.Pixel);
 
-            var textSize = graphic.MeasureString("www.MySite.com",font);
+                var siteName = "www.mysite.com";
 
-            var color = Color.FromArgb(110,255,255,255);
-            var brush = new SolidBrush(color);
+                using var img = Image.FromFile(path);
 
-            var position = new Point(img.Width-((int)textSize.Width+30),img.Height-((int)textSize.Height+30));
+                using var graphic = Graphics.FromImage(img);
+
+                var font = new Font(FontFamily.GenericMonospace, 32, FontStyle.Bold, GraphicsUnit.Pixel);
+
+                var textSize = graphic.MeasureString("www.MySite.com", font);
+
+                var color = Color.FromArgb(110, 255, 255, 255);
+                var brush = new SolidBrush(color);
+
+                var position = new Point(img.Width - ((int)textSize.Width + 30), img.Height - ((int)textSize.Height + 30));
+
+                graphic.DrawString(siteName, font, brush, position);
+
+                img.Save("wwwroot/Images/watermarks/" + productImageCreatedEvent.ImageName);
+
+                img.Dispose();
+                graphic.Dispose();
+
+                _channel.BasicAck(@event.DeliveryTag,false);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return Task.CompletedTask;
+
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)

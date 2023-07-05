@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using RabbitMQWatermark.WEB.BackgroundServices;
 using RabbitMQWatermark.WEB.Models;
 using RabbitMQWatermark.WEB.Services;
 
@@ -21,6 +22,8 @@ namespace RabbitMQWatermark.WEB
 
             builder.Services.AddSingleton<RabbitMQClientService>();
             builder.Services.AddSingleton<RabbitMQPublisher>();
+
+            builder.Services.AddHostedService<ImageWatermarkProcessBackgroundService>();
 
             var app = builder.Build();
 
