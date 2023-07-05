@@ -39,6 +39,8 @@ namespace RabbitMQWatermark.WEB.Services
             _channel.QueueBind(exchange:ExchangeName,queue:QueueName,routingKey:RoutingWatermark);
 
             _logger.LogInformation("RabbitMQ ile bağlantı kuruldu....");
+
+            return _channel;
         }
 
         public void Dispose()
